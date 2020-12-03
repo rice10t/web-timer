@@ -1,0 +1,22 @@
+.root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  background: darkblue;
+  color: white;
+}
+
+.time {
+  font-size: 90px;
+}
+
+.button {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  cursor: pointer;
+  user-select: none;
+  background: black;
+  font-size: 20px;
+}
