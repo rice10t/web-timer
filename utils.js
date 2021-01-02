@@ -1,3 +1,5 @@
+import {useEffect, useRef} from "react"
+
 export function secondsToTimeString(timeSeconds) {
   const hours = (timeSeconds >= 3600) ? Math.floor(timeSeconds / 3600) : 0
   const minutes = (timeSeconds >= 60) ? (Math.floor(timeSeconds / 60)) % 60 : 0
