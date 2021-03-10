@@ -38,6 +38,10 @@ export const AudioC = React.memo((props = {playing: false, src: ""}) => {
   return null
 })
 
+export const TimerNameInput = (props) => {
+  return <input className={styles.timerName} type="text" {...props} />
+}
+
 // TODO パフォーマンスの改善
 // コンポーネントの更新頻度
 export const Root = () => {
@@ -45,14 +49,16 @@ export const Root = () => {
     time: 0,
     timerStartTime: performance.now(),
     progressing: false,
-    timerId: null
+    timerId: null,
+    timerName: ""
   })
 
   const currentTime = state.progressing
     ? state.time - Math.floor((performance.now() - state.timerStartTime) / 1000) : state.time
 
   useEffect(() => {
-    document.title = secondsToTimeString(currentTime)
+    const timerName = state.timerName !== "" ? ` - ${state.timerName}` : ""
+    document.title = secondsToTimeString(currentTime) + timerName
   }, [currentTime])
 
   const addTime = (seconds) => {
@@ -98,25 +104,39 @@ export const Root = () => {
     })
   }
 
+  const updateTimerName = (e) => {
+    setState({
+      ...state,
+      timerName: e.target.value
+    })
+  }
+
   return <div className={styles.root}>
     <div>
+      <TimerNameInput placeholder="Name" onChange={updateTimerName}/>
       <Time time={currentTime}/>
       <AudioC playing={currentTime <= 0 && state.progressing} src={alarmSound}/>
-      <Button onClick={() => addTime(300)}>
-        +5m
-      </Button>
-      <Button onClick={() => addTime(60)}>
-        +1m
-      </Button>
-      <Button onClick={() => addTime(10)}>
-        +10s
-      </Button>
-      <Button onClick={() => clearTimer()}>
-        Clear
-      </Button>
-      <Button onClick={() => toggleTimer()}>
-        {state.progressing ? "stop" : "start"}
-      </Button>
+      <div className={styles.buttonContainer}>
+        <div>
+          <Button onClick={() => addTime(300)}>
+            +5m
+          </Button>
+          <Button onClick={() => addTime(60)}>
+            +1m
+          </Button>
+          <Button onClick={() => addTime(10)}>
+            +10s
+          </Button>
+        </div>
+        <div>
+          <Button onClick={() => clearTimer()}>
+            Clear
+          </Button>
+          <Button onClick={() => toggleTimer()}>
+            {state.progressing ? "Stop" : "Start"}
+          </Button>
+        </div>
+      </div>
     </div>
   </div>
 }
