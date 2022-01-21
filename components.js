@@ -3,19 +3,19 @@ import {secondsToTimeString, usePrevious} from "./utils"
 import styles from "./button.css"
 import alarmSound from './alarm.mp3'
 
-export const Time = ({time}) => {
+const Time = ({time}) => {
   return <div className={styles.time}>
     {secondsToTimeString(time)}
   </div>
 }
 
-export const Button = ({onClick, children}) => {
+const Button = ({onClick, children}) => {
   return <div className={styles.button} onClick={onClick}>
     {children}
   </div>
 }
 
-export const AudioC = React.memo((props = {playing: false, src: ""}) => {
+const AudioC = React.memo((props = {playing: false, src: ""}) => {
   const prev = usePrevious(props.playing)
   const prevPlaying = prev === undefined ? false : prev
 
@@ -38,7 +38,7 @@ export const AudioC = React.memo((props = {playing: false, src: ""}) => {
   return null
 })
 
-export const TimerNameInput = (props) => {
+const TimerNameInput = (props) => {
   return <input className={styles.timerName} type="text" {...props} />
 }
 
