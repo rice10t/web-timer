@@ -42,6 +42,10 @@ const TimerNameInput = (props) => {
   return <input className={styles.timerName} type="text" {...props} />
 }
 
+const ClearButton = ({onClick, children}) => {
+  return <div className={styles.clearButton} onClick={onClick}>{children}</div>
+}
+
 // TODO パフォーマンスの改善
 // コンポーネントの更新頻度
 export const Root = () => {
@@ -113,7 +117,10 @@ export const Root = () => {
 
   return <div className={styles.root}>
     <div>
-      <TimerNameInput placeholder="Name" onChange={updateTimerName}/>
+      <div className={styles.timerHeader}>
+        <TimerNameInput placeholder="Name" onChange={updateTimerName}/>
+        <ClearButton onClick={() => clearTimer()}>x</ClearButton>
+      </div>
       <Time time={currentTime}/>
       <AudioC playing={currentTime <= 0 && state.progressing} src={alarmSound}/>
       <div className={styles.buttonContainer}>
@@ -129,9 +136,6 @@ export const Root = () => {
           </Button>
         </div>
         <div>
-          <Button onClick={() => clearTimer()}>
-            Clear
-          </Button>
           <Button onClick={() => toggleTimer()}>
             {state.progressing ? "Stop" : "Start"}
           </Button>

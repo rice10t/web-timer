@@ -7,23 +7,9 @@
   color: white;
 }
 
-.time {
-  font-size: 90px;
-}
-
-.buttonContainer {
+.timerHeader {
   display: flex;
-  justify-content: space-between;
-}
-
-.button {
-  display: inline-block;
-  box-sizing: border-box;
-  padding: 4px 8px;
-  cursor: pointer;
-  user-select: none;
-  background: black;
-  font-size: 20px;
+  justify-content: center;
 }
 
 .timerName {
@@ -44,4 +30,32 @@
 
 .timerName:focus {
   border-bottom: solid 1px white;
+}
+
+.clearButton {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 4px 4px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 20px;
+}
+
+.time {
+  font-size: 90px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
+.button {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 4px 8px;
+  cursor: pointer;
+  user-select: none;
+  background: black;
+  font-size: 20px;
 }
