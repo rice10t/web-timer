@@ -23,4 +23,4 @@ module.exports="alarm.d91f27c6.mp3";
 },{"react":"HdMw","./utils":"FOZT","./button.css":"vjTn","./alarm.mp3":"hIHN"}],"Focm":[function(require,module,exports) {
 "use strict";var e=u(require("react")),t=u(require("react-dom")),r=require("./components");function u(e){return e&&e.__esModule?e:{default:e}}t.default.render(e.default.createElement(r.Root,null),document.getElementById("root"));
 },{"react":"HdMw","react-dom":"X9zx","./components":"lWcS"}]},{},["Focm"], null)
-//# sourceMappingURL=web-timer.a1766504.js.map
+//# sourceMappingURL=web-timer.ea9059f9.js.map
