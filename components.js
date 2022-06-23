@@ -15,6 +15,21 @@ const Button = ({onClick, children}) => {
   </div>
 }
 
+const TimerNameInput = (props) => {
+  return <input className={styles.timerName} type="text" {...props} />
+}
+
+const ClearButton = ({onClick, children}) => {
+  return <div className={styles.clearButton} onClick={onClick}>{children}</div>
+}
+
+const Initializer = () => {
+  useEffect(() => {
+    Notification.requestPermission()
+  }, [])
+  return null
+}
+
 const AudioC = React.memo((props = {playing: false, src: ""}) => {
   const prev = usePrevious(props.playing)
   const prevPlaying = prev === undefined ? false : prev
@@ -38,12 +53,23 @@ const AudioC = React.memo((props = {playing: false, src: ""}) => {
   return null
 })
 
-const TimerNameInput = (props) => {
-  return <input className={styles.timerName} type="text" {...props} />
-}
 
-const ClearButton = ({onClick, children}) => {
-  return <div className={styles.clearButton} onClick={onClick}>{children}</div>
+const DesktopNotification = ({currentTime, timerName}) => {
+  const prevTime = usePrevious(currentTime)
+  useEffect(() => {
+    console.log({
+      currentTime,
+      prevTime,
+      timerName
+    })
+    if (currentTime === 0 && prevTime === 1 && Notification.permission === "granted") {
+      new Notification("Time is UP!", {
+        body: timerName
+      })
+    }
+  })
+
+  return null;
 }
 
 // TODO パフォーマンスの改善
@@ -122,7 +148,6 @@ export const Root = () => {
         <ClearButton onClick={() => clearTimer()}>x</ClearButton>
       </div>
       <Time time={currentTime}/>
-      <AudioC playing={currentTime <= 0 && state.progressing} src={alarmSound}/>
       <div className={styles.buttonContainer}>
         <div>
           <Button onClick={() => addTime(300)}>
@@ -142,5 +167,8 @@ export const Root = () => {
         </div>
       </div>
     </div>
+    <Initializer/>
+    <AudioC playing={currentTime <= 0 && state.progressing} src={alarmSound}/>
+    <DesktopNotification currentTime={currentTime} timerName={state.timerName}/>
   </div>
 }
