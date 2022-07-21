@@ -1,36 +1,36 @@
-import React, {useState, useEffect} from "react"
+import React, {useState, useEffect, InputHTMLAttributes} from "react"
 import {secondsToTimeString, usePrevious} from "./utils"
 import styles from "./button.css"
 import alarmSound from './alarm.mp3'
 
-const Time = ({time}) => {
+const Time: React.FC<{ time: number }> = ({time}) => {
   return <div className={styles.time}>
     {secondsToTimeString(time)}
   </div>
 }
 
-const Button = ({onClick, children}) => {
+const Button: React.FC<{ onClick: () => void, children?: React.ReactNode }> = ({onClick, children}) => {
   return <div className={styles.button} onClick={onClick}>
     {children}
   </div>
 }
 
-const TimerNameInput = (props) => {
+const TimerNameInput: React.FC<InputHTMLAttributes<HTMLInputElement>> = (props) => {
   return <input className={styles.timerName} type="text" {...props} />
 }
 
-const ClearButton = ({onClick, children}) => {
+const ClearButton: React.FC<{ onClick: () => void, children?: React.ReactNode }> = ({onClick, children}) => {
   return <div className={styles.clearButton} onClick={onClick}>{children}</div>
 }
 
-const Initializer = () => {
+const Initializer: React.FC = () => {
   useEffect(() => {
     Notification.requestPermission()
   }, [])
   return null
 }
 
-const AudioC = React.memo((props = {playing: false, src: ""}) => {
+const AudioC = React.memo<{ playing: boolean, src: string }>((props = {playing: false, src: ""}) => {
   const prev = usePrevious(props.playing)
   const prevPlaying = prev === undefined ? false : prev
 
@@ -54,7 +54,7 @@ const AudioC = React.memo((props = {playing: false, src: ""}) => {
 })
 
 
-const DesktopNotification = ({currentTime, timerName}) => {
+const DesktopNotification: React.FC<{ currentTime: number, timerName: string }> = ({currentTime, timerName}) => {
   const prevTime = usePrevious(currentTime)
   useEffect(() => {
     console.log({
@@ -74,7 +74,7 @@ const DesktopNotification = ({currentTime, timerName}) => {
 
 // TODO パフォーマンスの改善
 // コンポーネントの更新頻度
-export const Root = () => {
+export const Root: React.FC = () => {
   const [state, setState] = useState({
     time: 0,
     timerStartTime: performance.now(),

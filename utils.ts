@@ -4,7 +4,7 @@ import {useEffect, useRef} from "react"
  * 秒数を HH:mm:ss の形式の文字列に変換する
  * マイナスの秒数を渡した場合、結果もマイナスになる
  */
-export function secondsToTimeString(timeSeconds) {
+export function secondsToTimeString(timeSeconds: number) {
   const isPositive = timeSeconds >= 0
   const absSeconds = Math.abs(timeSeconds)
 
@@ -22,8 +22,8 @@ export function secondsToTimeString(timeSeconds) {
 /**
  * https://reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state
  */
-export function usePrevious(value) {
-  const ref = useRef();
+export function usePrevious<T>(value: T): T {
+  const ref = useRef<T>(value);
   useEffect(() => {
     ref.current = value;
   });
