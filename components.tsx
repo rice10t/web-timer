@@ -1,4 +1,4 @@
-import React, {useState, useEffect, InputHTMLAttributes} from "react"
+import React, {useState, useEffect, InputHTMLAttributes, useRef} from "react"
 import {secondsToTimeString, usePrevious} from "./utils"
 import styles from "./button.css"
 import alarmSound from './alarm.mp3'
@@ -57,11 +57,6 @@ const AudioC = React.memo<{ playing: boolean, src: string }>((props = {playing: 
 const DesktopNotification: React.FC<{ currentTime: number, timerName: string }> = ({currentTime, timerName}) => {
   const prevTime = usePrevious(currentTime)
   useEffect(() => {
-    console.log({
-      currentTime,
-      prevTime,
-      timerName
-    })
     if (currentTime === 0 && prevTime === 1 && Notification.permission === "granted") {
       new Notification("Time is UP!", {
         body: timerName
@@ -72,65 +67,74 @@ const DesktopNotification: React.FC<{ currentTime: number, timerName: string }> 
   return null;
 }
 
-// TODO パフォーマンスの改善
-// コンポーネントの更新頻度
 export const Root: React.FC = () => {
+  const timerStartTime = useRef(performance.now())
+  const timerId = useRef<number>(null)
+
   const [state, setState] = useState({
-    time: 0,
-    timerStartTime: performance.now(),
+    startTime: 0,
+    displayTime: 0,
     progressing: false,
-    timerId: null,
     timerName: ""
   })
 
-  const currentTime = state.progressing
-    ? state.time - Math.floor((performance.now() - state.timerStartTime) / 1000) : state.time
-
   useEffect(() => {
     const timerName = state.timerName !== "" ? ` - ${state.timerName}` : ""
-    document.title = secondsToTimeString(currentTime) + timerName
-  }, [currentTime])
+    document.title = secondsToTimeString(state.displayTime) + timerName
+  }, [state.timerName, state.displayTime])
 
   const addTime = (seconds) => {
     setState({
       ...state,
-      time: state.time + seconds
+      startTime: state.startTime + seconds,
+      displayTime: state.startTime + seconds,
     })
   }
 
   const toggleTimer = () => {
     if (!state.progressing) {
       // start
-      const id = setInterval(() => setState(prev => ({
-        ...prev,
-      })), 100)
+      const id = setInterval(() => {
+        setState(prev => {
+          const nextTime = prev.startTime - Math.floor((performance.now() - timerStartTime.current) / 1000)
+          if (nextTime === prev.displayTime) {
+            return prev
+          } else {
+            return {
+              ...prev,
+              displayTime: nextTime
+            }
+          }
+        })
+      }, 50)
+      timerStartTime.current = performance.now()
+      timerId.current = id
       setState({
         ...state,
-        timerStartTime: performance.now(),
         progressing: true,
-        timerId: id,
       })
     } else {
       // stop
-      clearInterval(state.timerId)
+      clearInterval(timerId.current)
+      timerId.current = null
       setState({
         ...state,
-        time: currentTime,
+        startTime: state.displayTime,
         progressing: false,
-        timerId: null,
       })
     }
   }
 
   const clearTimer = () => {
-    if (state.timerId !== null) {
-      clearInterval(state.timerId)
+    if (timerId.current !== null) {
+      clearInterval(timerId.current)
     }
+    timerId.current = null
     setState({
       ...state,
-      time: 0,
+      startTime: 0,
+      displayTime: 0,
       progressing: false,
-      timerId: null
     })
   }
 
@@ -147,7 +151,7 @@ export const Root: React.FC = () => {
         <TimerNameInput placeholder="Name" onChange={updateTimerName}/>
         <ClearButton onClick={() => clearTimer()}>x</ClearButton>
       </div>
-      <Time time={currentTime}/>
+      <Time time={state.displayTime}/>
       <div className={styles.buttonContainer}>
         <div>
           <Button onClick={() => addTime(300)}>
@@ -168,7 +172,7 @@ export const Root: React.FC = () => {
       </div>
     </div>
     <Initializer/>
-    <AudioC playing={currentTime <= 0 && state.progressing} src={alarmSound}/>
-    <DesktopNotification currentTime={currentTime} timerName={state.timerName}/>
+    <AudioC playing={state.displayTime <= 0 && state.progressing} src={alarmSound}/>
+    <DesktopNotification currentTime={state.displayTime} timerName={state.timerName}/>
   </div>
 }
