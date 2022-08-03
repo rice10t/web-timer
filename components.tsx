@@ -58,7 +58,7 @@ const DesktopNotification: React.FC<{ currentTime: number, timerName: string }> 
   const prevTime = usePrevious(currentTime)
   useEffect(() => {
     if (currentTime === 0 && prevTime === 1 && Notification.permission === "granted") {
-      new Notification("Time is UP!", {
+      new Notification("Time is up!", {
         body: timerName
       })
     }
