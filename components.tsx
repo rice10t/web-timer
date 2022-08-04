@@ -62,6 +62,23 @@ const useNotification = (displayTime: number, timerName: string) => {
   }, [displayTime, prevTime, timerName])
 }
 
+const useBlocking = (progressing: boolean, displayTime: number) => {
+  useEffect(() => {
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault()
+      e.returnValue = ""
+    }
+
+    if (progressing && displayTime > 0) {
+      window.addEventListener("beforeunload", handler)
+    }
+
+    return () => {
+      window.removeEventListener("beforeunload", handler)
+    }
+  }, [progressing, displayTime])
+}
+
 export const Root: React.FC = () => {
   const timerStartTime = useRef(performance.now())
   const timerId = useRef<number>(null)
@@ -79,6 +96,7 @@ export const Root: React.FC = () => {
   }, [state.timerName, state.displayTime])
 
   useNotification(state.displayTime, state.timerName)
+  useBlocking(state.progressing, state.displayTime)
 
   const addTime = (seconds) => {
     setState({
