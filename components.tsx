@@ -23,13 +23,6 @@ const ClearButton: React.FC<{ onClick: () => void, children?: React.ReactNode }>
   return <div className={styles.clearButton} onClick={onClick}>{children}</div>
 }
 
-const Initializer: React.FC = () => {
-  useEffect(() => {
-    Notification.requestPermission()
-  }, [])
-  return null
-}
-
 const AudioC = React.memo<{ playing: boolean, src: string }>((props = {playing: false, src: ""}) => {
   const prev = usePrevious(props.playing)
   const prevPlaying = prev === undefined ? false : prev
@@ -53,18 +46,20 @@ const AudioC = React.memo<{ playing: boolean, src: string }>((props = {playing: 
   return null
 })
 
+const useNotification = (displayTime: number, timerName: string) => {
+  const prevTime = usePrevious(displayTime)
 
-const DesktopNotification: React.FC<{ currentTime: number, timerName: string }> = ({currentTime, timerName}) => {
-  const prevTime = usePrevious(currentTime)
   useEffect(() => {
-    if (currentTime === 0 && prevTime === 1 && Notification.permission === "granted") {
+    Notification.requestPermission()
+  }, [])
+
+  useEffect(() => {
+    if (displayTime === 0 && prevTime === 1 && Notification.permission === "granted") {
       new Notification("Time is up!", {
         body: timerName
       })
     }
-  })
-
-  return null;
+  }, [displayTime, prevTime, timerName])
 }
 
 export const Root: React.FC = () => {
@@ -82,6 +77,8 @@ export const Root: React.FC = () => {
     const timerName = state.timerName !== "" ? ` - ${state.timerName}` : ""
     document.title = secondsToTimeString(state.displayTime) + timerName
   }, [state.timerName, state.displayTime])
+
+  useNotification(state.displayTime, state.timerName)
 
   const addTime = (seconds) => {
     setState({
@@ -171,8 +168,6 @@ export const Root: React.FC = () => {
         </div>
       </div>
     </div>
-    <Initializer/>
     <AudioC playing={state.displayTime <= 0 && state.progressing} src={alarmSound}/>
-    <DesktopNotification currentTime={state.displayTime} timerName={state.timerName}/>
   </div>
 }
